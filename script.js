@@ -1,78 +1,91 @@
 //your JS code here. If required.
-let mainDev = document.getElementById('main');
-let img1 = document.getElementsByClassName('img1');
-let img2 = document.getElementsByClassName('img2');
-let img3 = document.getElementsByClassName('img3');
-let img4 = document.getElementsByClassName('img4');
-let img5 = document.getElementsByClassName('img5');
-// let arr=[img1,img2,img3,img4,img5];
-for (let i = 1; i <= 5; i++) {
-    let img = document.createElement('img');
-    img.setAttribute("src", `img${i}`);
-    img.setAttribute('data-ns-img', i);
-    img.onclick = function (e) {
-        readCaptcha(this);
-    }
-    img.width = 220;
-    img.height = 220;
-    mainDev.append(img);
+let image = [];
+for (let i = 0; i < 5; i++) {
+  let t = document.createElement("IMG");
+  t.setAttribute("data-ns-test", `img${i + 1}`);
+  t.width = 100;
+  t.height = 100;
+  t.onclick = (e) => captchaClick(e);
+  t.src = `images/${i + 1}.jpg`;
+  image.push(t);
 }
-let n = Math.floor(Math.random() * 5) + 1;
-let img = document.createElement('img');
-img.setAttribute('src', `img${n}`);
-img.setAttribute('data-ns-img', n);
-img.width = 220;
-img.height = 220;
-img.onclick = function (e) {
-    readCaptcha(this);
+let temp = Math.floor(Math.random() * 5);
+let t = document.createElement("IMG");
+t.setAttribute("data-ns-test", `img${temp + 1}`);
+t.width = 100;
+t.height = 100;
+t.onclick = (e) => captchaClick(e);
+t.src = `images/${temp + 1}.jpg`;
+image.push(t);
+image.sort(() => Math.random() - 0.5);
+for (let i = 0; i < 6; i++) {
+  document.getElementById("main").appendChild(image[i]);
 }
-mainDev.append(img);
-let flag = false;
+
 let captcha = [];
-let click1 = 0;
-let click2 = 0;
-let verify = document.getElementById('verify');
-// let verify=document.createElement('button');
-// verify.innerHTML='verify';
-function readCaptcha(e) {
-    // counter++;
-    e.getAttribute('data-ns-img');
-    // captcha.push(e.getAttribute('data-ns-img'));
-    // console.log(captcha);
-    if (flag)
-        click2 = e.getAttribute('data-ns-img');
-    else
-        click1 = e.getAttribute('data-ns-img');
-    // flag=true;
-    console.log(click1, click2);
-    if (click1 != 0 && flag == false) {
-        let reset = document.getElementById('reset');
-
-        // let reset=document.createElement('button');
-        // reset.innerHTML='reset';
-        // mainDev.append(reset);
-        reset.onclick = resetCaptcha;
-    }
-    if (click1 != 0 && click2 != 0 && !mainDev.contains(verify)) {
-        mainDev.append(verify)
-        verify.onclick = checkCaptcha;
-    }
-    flag = true;
+function clearCaptcha() {
+  // console.log("Clearing captcha");
+  for (let i = 0; i < 6; i++) {
+    image[i].onclick = (e) => captchaClick(e);
+  }
+  captcha = [];
+  try {
+    document.getElementById("para").remove();
+  } catch (e) {}
+  try {
+    document.getElementById("btn").remove();
+  } catch (e) {}
+  try {
+    document.getElementById("reset").remove();
+  } catch (e) {}
 }
 
-function checkCaptcha() {
-    if (click1 == click2) {
-        let inter = "  Verified";
-        mainDev.append(" " + inter);
+function captchaClick(e) {
+  console.log(e.target.attributes["data-ns-test"].nodeValue);
+  captcha.push(e.target.attributes["data-ns-test"].nodeValue);
+  e.target.onclick = () => {};
+  // console.log(captcha);
 
-    }
-    // console.log("verified");
-    else {
-        let imln = " Not Verified";
-        mainDev.append(" " + imln);
-        // console.log("not verified");
-    }
+  if (captcha.length === 1) {
+    let p = document.createElement("button");
+    p.id = "reset";
+    p.innerHTML = "Reset";
+    p.onclick = () => {
+      clearCaptcha();
+    };
+    document.getElementById("main").appendChild(p);
+  }
+
+  if (captcha.length === 2) {
+    let t = document.createElement("button");
+    t.id = "btn";
+    t.innerHTML = "Verify";
+    t.onclick = () => {
+      captchaVerify();
+    };
+    document.getElementById("main").appendChild(t);
+  } else if (captcha.length > 2) {
+    try {
+      document.getElementById("btn").remove();
+    } catch (e) {}
+  }
+  try {
+    document.getElementById("para").remove();
+  } catch (e) {}
 }
-function resetCaptcha() {
-    location.reload();
+
+function captchaVerify() {
+  if (captcha.length === 2 && captcha[0] === captcha[1]) {
+    let t = document.createElement("P");
+    t.innerHTML = "You are a human. Congratulations!";
+    t.id = "para";
+    document.getElementById("main").appendChild(t);
+  } else {
+    let t = document.createElement("P");
+    t.innerHTML =
+      "We can't verify you as a human. You selected the non-identical tiles.";
+    t.id = "para";
+    document.getElementById("main").appendChild(t);
+  }
+  document.getElementById("btn").remove();
 }
