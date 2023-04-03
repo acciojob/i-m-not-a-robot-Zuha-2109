@@ -1,34 +1,78 @@
 //your JS code here. If required.
-let selectedTiles = [];
+let mainDev = document.getElementById('main');
+let img1 = document.getElementsByClassName('img1');
+let img2 = document.getElementsByClassName('img2');
+let img3 = document.getElementsByClassName('img3');
+let img4 = document.getElementsByClassName('img4');
+let img5 = document.getElementsByClassName('img5');
+// let arr=[img1,img2,img3,img4,img5];
+for (let i = 1; i <= 5; i++) {
+    let img = document.createElement('img');
+    img.setAttribute("src", `img${i}`);
+    img.setAttribute('data-ns-img', i);
+    img.onclick = function (e) {
+        readCaptcha(this);
+    }
+    img.width = 220;
+    img.height = 220;
+    mainDev.append(img);
+}
+let n = Math.floor(Math.random() * 5) + 1;
+let img = document.createElement('img');
+img.setAttribute('src', `img${n}`);
+img.setAttribute('data-ns-img', n);
+img.width = 220;
+img.height = 220;
+img.onclick = function (e) {
+    readCaptcha(this);
+}
+mainDev.append(img);
+let flag = false;
+let captcha = [];
+let click1 = 0;
+let click2 = 0;
+let verify = document.getElementById('verify');
+// let verify=document.createElement('button');
+// verify.innerHTML='verify';
+function readCaptcha(e) {
+    // counter++;
+    e.getAttribute('data-ns-img');
+    // captcha.push(e.getAttribute('data-ns-img'));
+    // console.log(captcha);
+    if (flag)
+        click2 = e.getAttribute('data-ns-img');
+    else
+        click1 = e.getAttribute('data-ns-img');
+    // flag=true;
+    console.log(click1, click2);
+    if (click1 != 0 && flag == false) {
+        let reset = document.getElementById('reset');
 
-function selectTile(tile) {
-  if (selectedTiles.length < 2) {
-    selectedTiles.push(tile);
-    tile.classList.add("selected");
-    document.getElementById("reset").style.display = "block";
-  }
-  if (selectedTiles.length === 2) {
-    document.getElementById("verify").style.display = "block";
-  }
+        // let reset=document.createElement('button');
+        // reset.innerHTML='reset';
+        // mainDev.append(reset);
+        reset.onclick = resetCaptcha;
+    }
+    if (click1 != 0 && click2 != 0 && !mainDev.contains(verify)) {
+        mainDev.append(verify)
+        verify.onclick = checkCaptcha;
+    }
+    flag = true;
 }
 
-function reset() {
-  selectedTiles.forEach(tile => {
-    tile.classList.remove("selected");
-  });
-  selectedTiles = [];
-  document.getElementById("reset").style.display = "none";
-  document.getElementById("verify").style.display = "none";
-  document.getElementById("para").style.display = "none";
-}
+function checkCaptcha() {
+    if (click1 == click2) {
+        let inter = "  Verified";
+        mainDev.append(" " + inter);
 
-function verify() {
-  if (selectedTiles[0].className === selectedTiles[1].className) {
-    document.getElementById("para").innerHTML = "You are a human. Congratulations!";
-  } else {
-    document.getElementById("para").innerHTML = "We can't verify you as a human. You selected the non-identical tiles.";
-  }
-  document.getElementById("reset").style.display = "none";
-  document.getElementById("verify").style.display = "none";
-  document.getElementById("para").style.display = "block";
+    }
+    // console.log("verified");
+    else {
+        let imln = " Not Verified";
+        mainDev.append(" " + imln);
+        // console.log("not verified");
+    }
+}
+function resetCaptcha() {
+    location.reload();
 }
